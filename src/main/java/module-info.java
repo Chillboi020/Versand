@@ -3,6 +3,6 @@ module de.edwin.versand {
     requires javafx.fxml;
 
 
-    opens de.edwin.versand to javafx.fxml;
-    exports de.edwin.versand;
+    opens de.edvschuleplattling.ekorn to javafx.fxml;
+    exports de.edvschuleplattling.ekorn;
 }

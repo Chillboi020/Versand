@@ -1,4 +1,4 @@
-package de.edwin.versand;
+package de.edvschuleplattling.ekorn;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

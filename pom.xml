@@ -60,7 +60,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>de.edwin.versand/de.edwin.versand.VersandApplication</mainClass>
+                            <mainClass>de.edwin.versand/de.edvschuleplattling.ekorn.VersandApplication</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>
