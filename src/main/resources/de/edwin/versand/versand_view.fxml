@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="910.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.edwin.versand.VersandController">
+   <children>
+      <Label layoutX="32.0" layoutY="21.0" text="Versandobjekt erfassen" underline="true">
+         <font>
+            <Font name="Roboto Bold" size="36.0" />
+         </font>
+      </Label>
+      <Pane layoutX="32.0" layoutY="75.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="100.0" prefWidth="422.0">
+         <children>
+            <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="422.0">
+               <children>
+                  <Label layoutX="14.0" layoutY="14.0" text="ID:" />
+                  <Label layoutX="14.0" layoutY="50.0" text="Aufgegeben:" />
+                  <TextField fx:id="txt_ID" layoutX="42.0" layoutY="10.0" prefHeight="25.0" prefWidth="345.0" />
+                  <DatePicker fx:id="dtp_Aufgegeben" editable="false" layoutX="92.0" layoutY="46.0" showWeekNumbers="true">
+                     <cursor>
+                        <Cursor fx:constant="DEFAULT" />
+                     </cursor></DatePicker>
+               </children>
+            </AnchorPane>
+         </children>
+      </Pane>
+      <Pane layoutX="462.0" layoutY="75.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="100.0" prefWidth="430.0">
+         <children>
+            <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="430.0">
+               <children>
+                  <Label layoutX="14.0" layoutY="14.0" text="Tools:" />
+                  <Button fx:id="btn_Speichern" layoutX="52.0" layoutY="10.0" mnemonicParsing="false" text="Speichern">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Button fx:id="btn_Laden" layoutX="127.0" layoutY="10.0" mnemonicParsing="false" text="Laden">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Button fx:id="btn_Reset" layoutX="181.0" layoutY="10.0" mnemonicParsing="false" text="Reset">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Label layoutX="16.0" layoutY="41.0" text="Meldung:" />
+                  <TextField fx:id="txt_Meldung" editable="false" layoutX="12.0" layoutY="61.0" prefHeight="25.0" prefWidth="410.0">
+                     <cursor>
+                        <Cursor fx:constant="DEFAULT" />
+                     </cursor>
+                  </TextField>
+               </children>
+            </AnchorPane>
+         </children>
+      </Pane>
+      <TitledPane animated="false" collapsible="false" layoutX="25.0" layoutY="185.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="155.0" prefWidth="430.0" text="Absender">
+        <content>
+          <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="155.0" prefWidth="430.0">
+               <children>
+                  <TextField fx:id="txt_A_Vname" layoutX="14.0" layoutY="15.0" prefHeight="25.0" prefWidth="125.0" promptText="Vorname" />
+                  <TextField fx:id="txt_A_Nname" layoutX="161.0" layoutY="15.0" prefHeight="25.0" prefWidth="125.0" promptText="Nachname" />
+                  <TextField fx:id="txt_A_Str" layoutX="14.0" layoutY="55.0" prefHeight="25.0" prefWidth="270.0" promptText="Straße" />
+                  <TextField fx:id="txt_A_Str_Nr" layoutX="298.0" layoutY="55.0" prefHeight="25.0" prefWidth="50.0" promptText="Str. Nr." />
+                  <TextField fx:id="txt_A_PLZ" layoutX="14.0" layoutY="95.0" prefHeight="25.0" prefWidth="125.0" promptText="PLZ" />
+                  <TextField fx:id="txt_A_Ort" layoutX="149.0" layoutY="95.0" prefHeight="25.0" prefWidth="200.0" promptText="Ort" />
+                  <Button fx:id="btn_A_Pruefe" layoutX="360.0" layoutY="95.0" mnemonicParsing="false" text="Prüfen">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+               </children>
+            </AnchorPane>
+        </content>
+         <font>
+            <Font name="Arial Bold" size="12.0" />
+         </font>
+      </TitledPane>
+      <TitledPane animated="false" collapsible="false" layoutX="25.0" layoutY="350.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="155.0" prefWidth="430.0" text="Empfänger">
+         <content>
+            <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="166.0" prefWidth="430.0">
+               <children>
+                  <TextField fx:id="txt_E_Vname" layoutX="14.0" layoutY="15.0" prefHeight="25.0" prefWidth="125.0" promptText="Vorname" />
+                  <TextField fx:id="txt_E_Nname" layoutX="160.0" layoutY="15.0" prefHeight="25.0" prefWidth="125.0" promptText="Nachname" />
+                  <TextField fx:id="txt_E_Str" layoutX="14.0" layoutY="55.0" prefHeight="25.0" prefWidth="270.0" promptText="Straße" />
+                  <TextField fx:id="txt_E_Str_Nr" layoutX="298.0" layoutY="55.0" prefHeight="25.0" prefWidth="50.0" promptText="Str. Nr." />
+                  <TextField fx:id="txt_E_PLZ" layoutX="14.0" layoutY="95.0" prefHeight="25.0" prefWidth="125.0" promptText="PLZ" />
+                  <TextField fx:id="txt_E_Ort" layoutX="149.0" layoutY="95.0" prefHeight="25.0" prefWidth="200.0" promptText="Ort" />
+                  <Button fx:id="btn_E_Pruefe" layoutX="360.0" layoutY="95.0" mnemonicParsing="false" text="Prüfen">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+               </children>
+            </AnchorPane>
+         </content>
+         <font>
+            <Font name="Arial Bold" size="12.0" />
+         </font>
+      </TitledPane>
+      <Pane layoutX="25.0" layoutY="510.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="155.0" prefWidth="428.0">
+         <children>
+            <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="155.0" prefWidth="430.0">
+               <children>
+                  <Label layoutX="16.0" layoutY="6.0" text="Beschreibung des Inhalts (optional):">
+                     <font>
+                        <Font name="Arial" size="12.0" />
+                     </font>
+                  </Label>
+                  <TextArea fx:id="txta_Beschreibung" layoutX="17.0" layoutY="28.0" prefHeight="110.0" prefWidth="395.0" />
+               </children>
+            </AnchorPane>
+         </children>
+      </Pane>
+      <TitledPane animated="false" collapsible="false" layoutX="475.0" layoutY="185.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="240.0" prefWidth="350.0" text="Zustellung">
+         <content>
+            <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="240.0" prefWidth="350.0">
+               <children>
+                  <CheckBox fx:id="cb_Express" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="Express" />
+                  <Pane layoutX="5.0" layoutY="40.0" prefHeight="25.0" prefWidth="225.0">
+                     <children>
+                        <RadioButton fx:id="rb_Brief" layoutX="10.0" layoutY="5.0" mnemonicParsing="false" text="Brief" />
+                        <RadioButton fx:id="rb_Paeckchen" layoutX="70.0" layoutY="5.0" mnemonicParsing="false" text="Päckchen" />
+                        <RadioButton fx:id="rb_Paket" layoutX="148.0" layoutY="5.0" mnemonicParsing="false" text="Paket" />
+                     </children>
+                  </Pane>
+                  <Label layoutX="14.0" layoutY="73.0" text="Wunschtermin Zustellung:" />
+                  <DatePicker fx:id="dtp_Wunschtermin" editable="false" layoutX="161.0" layoutY="69.0" prefHeight="25.0" prefWidth="150.0" showWeekNumbers="true">
+                     <cursor>
+                        <Cursor fx:constant="DEFAULT" />
+                     </cursor></DatePicker>
+                  <CheckBox fx:id="cb_AltAblage" layoutX="12.0" layoutY="108.0" mnemonicParsing="false" text="Alternativer Ablageort:" />
+                  <TextArea fx:id="txta_AltAblage" disable="true" layoutX="12.0" layoutY="136.0" prefHeight="65.0" prefWidth="325.0" />
+               </children>
+            </AnchorPane>
+         </content>
+         <font>
+            <Font name="Arial Bold" size="12.0" />
+         </font>
+      </TitledPane>
+      <TitledPane fx:id="tpane_Versicherung" animated="false" collapsible="false" layoutX="475.0" layoutY="436.0" prefHeight="200.0" prefWidth="125.0" text="Versicherung">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="183.0" prefWidth="149.0">
+               <children>
+                  <CheckBox fx:id="cb_Versichert" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="versichert" />
+                  <Pane fx:id="pane_Versicherung" layoutX="14.0" layoutY="39.0" prefHeight="80.0" prefWidth="80.0">
+                     <children>
+                        <RadioButton fx:id="rb_bis100" layoutX="1.0" layoutY="5.0" mnemonicParsing="false" text="&lt;= 100€" />
+                        <RadioButton fx:id="rb_bis500" layoutX="1.0" layoutY="29.0" mnemonicParsing="false" text="&lt;= 500€" />
+                        <RadioButton fx:id="rb_ue500" layoutX="1.0" layoutY="55.0" mnemonicParsing="false" text=" &gt;  500€" />
+                     </children>
+                  </Pane>
+                  <Pane fx:id="pane_Betrag" layoutX="14.0" layoutY="119.0" prefHeight="55.0" prefWidth="95.0">
+                     <children>
+                        <Label fx:id="lbl_Betrag" layoutY="6.0" text="Betrag:" />
+                        <TextField fx:id="txt_Betrag" layoutY="23.0" prefHeight="25.0" prefWidth="75.0" />
+                        <Label layoutX="80.0" layoutY="27.0" text="€" />
+                     </children>
+                  </Pane>
+               </children>
+            </AnchorPane>
+        </content>
+         <font>
+            <Font name="Arial Bold" size="12.0" />
+         </font>
+      </TitledPane>
+      <TitledPane animated="false" collapsible="false" layoutX="610.0" layoutY="436.0" prefHeight="200.0" prefWidth="215.0" text="Preisberechnung">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <Label layoutX="14.0" layoutY="40.0" text="Rabatt:" />
+                  <Slider fx:id="sld_Rabatt" blockIncrement="1.0" layoutX="60.0" layoutY="40.0" majorTickUnit="1.0" max="10.0" minorTickCount="1" showTickLabels="true" showTickMarks="true" value="5.0">
+                     <cursor>
+                        <Cursor fx:constant="E_RESIZE" />
+                     </cursor></Slider>
+                  <Button fx:id="btn_Berechne" layoutX="14.0" layoutY="87.0" mnemonicParsing="false" text="Berechne">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></Button>
+                  <Label layoutX="14.0" layoutY="129.0" text="Preis:" />
+                  <TextField fx:id="txtPreis" editable="false" layoutX="52.0" layoutY="125.0" prefHeight="25.0" prefWidth="75.0">
+                     <cursor>
+                        <Cursor fx:constant="DEFAULT" />
+                     </cursor></TextField>
+                  <Label layoutX="130.0" layoutY="129.0" text="€" />
+               </children>
+            </AnchorPane>
+        </content>
+          <font>
+              <Font name="Arial Bold" size="12.0" />
+          </font>
+      </TitledPane>
+   </children>
+</AnchorPane>
