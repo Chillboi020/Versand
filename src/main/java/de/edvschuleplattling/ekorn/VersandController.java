@@ -1,11 +1,11 @@
 package de.edvschuleplattling.ekorn;
 
-import javafx.event.ActionEvent;
-import javafx.event.Event;
+import de.edvschuleplattling.ekorn.classes.Person;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -27,7 +27,7 @@ public class VersandController implements Initializable {
     @FXML
     private Button btn_Reset;
     @FXML
-    private TextField txt_Meldung;
+    private Label lbl_Meldung;
     //endregion
     //region Absender (PFLICHTFELD)
     @FXML
@@ -103,7 +103,7 @@ public class VersandController implements Initializable {
     @FXML
     private Button btn_Berechne;
     @FXML
-    private TextField txtPreis;
+    private TextField txt_Preis;
     @FXML
     private Button btn_A_Pruefung;
     @FXML
@@ -116,8 +116,10 @@ public class VersandController implements Initializable {
     //region Controller Variablen
     ToggleGroup zTypen = new ToggleGroup();
     ToggleGroup vTypen = new ToggleGroup();
-    ArrayList<TextField> absender;
-    ArrayList<TextField> empfaenger;
+    ArrayList<TextField> absenderList;
+    ArrayList<TextField> empfaengerList;
+    Person absender = new Person();
+    Person empfaenger = new Person();
     //endregion
 
     //region FXML Methoden
@@ -141,12 +143,36 @@ public class VersandController implements Initializable {
     //region Personen
     @FXML
     public void on_A_Pruefung_Click() {
-        System.out.println("Absender prüfen");
+        ArrayList<String> aList = new ArrayList<>();
+        for (TextField a : absenderList) {
+            aList.add(a.getText());
+        }
+        try {
+            absender = new Person(aList.get(0), aList.get(1), aList.get(2),
+                    aList.get(3), aList.get(4), aList.get(5));
+            System.out.println(absender);
+            lbl_Meldung.setText("");
+        } catch (IllegalArgumentException a) {
+            lbl_Meldung.setText("A: " + a.getMessage());
+            lbl_Meldung.setTextFill(Color.rgb(200, 0, 0));
+        }
     }
 
     @FXML
     public void on_E_Pruefung_Click() {
-        System.out.println("Empfänger prüfen");
+        ArrayList<String> aList = new ArrayList<>();
+        for (TextField e : empfaengerList) {
+            aList.add(e.getText());
+        }
+        try {
+            empfaenger = new Person(aList.get(0), aList.get(1), aList.get(2),
+                    aList.get(3), aList.get(4), aList.get(5));
+            System.out.println(empfaenger);
+            lbl_Meldung.setText("");
+        } catch (IllegalArgumentException a) {
+            lbl_Meldung.setText("E: " + a.getMessage());
+            lbl_Meldung.setTextFill(Color.rgb(200, 0, 0));
+        }
     }
     //endregion
 
@@ -155,12 +181,8 @@ public class VersandController implements Initializable {
     public void on_Ztyp_Select() {
         RadioButton rb = (RadioButton) zTypen.getSelectedToggle();
         switch (rb.getText()) {
-            case "Brief":
-                versicherungVisibility(false);
-                break;
-            case "Päckchen", "Paket":
-                versicherungVisibility(true);
-                break;
+            case "Brief" -> versicherungVisibility(false);
+            case "Päckchen", "Paket" -> versicherungVisibility(true);
         }
     }
 
@@ -195,11 +217,8 @@ public class VersandController implements Initializable {
         String rbText = rb.getText();
 
         switch (rbText) {
-            case "<= 100€", "<= 500€":
-                betragVisibility(false);
-                break;
-            case " >  500€":
-                betragVisibility(true);
+            case "<= 100€", "<= 500€" -> betragVisibility(false);
+            case " >  500€" -> betragVisibility(true);
         }
     }
     //endregion
@@ -219,11 +238,11 @@ public class VersandController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        absender = new ArrayList<>() {{
+        absenderList = new ArrayList<>() {{
             add(txt_A_Vname); add(txt_A_Nname); add(txt_A_Str); add(txt_A_Str_Nr); add(txt_A_PLZ); add(txt_A_Ort);
         }};
 
-        empfaenger = new ArrayList<>() {{
+        empfaengerList = new ArrayList<>() {{
             add(txt_E_Vname); add(txt_E_Nname); add(txt_E_Str); add(txt_E_Str_Nr); add(txt_E_PLZ); add(txt_E_Ort);
         }};
 
@@ -243,12 +262,14 @@ public class VersandController implements Initializable {
         txt_ID.clear();
         // Datum auf heutigen Tag setzen
         dtp_Aufgegeben.setValue(LocalDate.now());
+        lbl_Meldung.setText("");
+        lbl_Meldung.setTextFill(Color.BLACK);
 
         // Absender und Empfänger
-        for (TextField a : absender) {
+        for (TextField a : absenderList) {
             a.clear();
         }
-        for (TextField e : empfaenger) {
+        for (TextField e : empfaengerList) {
             e.clear();
         }
 
@@ -264,8 +285,13 @@ public class VersandController implements Initializable {
 
         // Versicherung
         on_Ztyp_Select();
+
+        // Preisberechnung
+        sld_Rabatt.setValue(5);
+        txt_Preis.clear();
     }
 
+    //region Sichtbarkeit für Versicherung
     public void versicherungVisibility(boolean b) {
         tpane_Versicherung.setVisible(b);
         if (!b) {
@@ -287,4 +313,5 @@ public class VersandController implements Initializable {
         pane_Betrag.setVisible(b);
         if (!b) txt_Betrag.clear();
     }
+    //endregion
 }

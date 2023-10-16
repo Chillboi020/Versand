@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="910.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.edvschuleplattling.ekorn.VersandController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="910.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.edvschuleplattling.ekorn.VersandController">
    <children>
       <Label layoutX="32.0" layoutY="21.0" text="Versandobjekt erfassen" underline="true">
          <font>
@@ -57,11 +57,7 @@
                      </cursor>
                   </Button>
                   <Label layoutX="16.0" layoutY="41.0" text="Meldung:" />
-                  <TextField fx:id="txt_Meldung" editable="false" layoutX="12.0" layoutY="61.0" prefHeight="25.0" prefWidth="410.0">
-                     <cursor>
-                        <Cursor fx:constant="DEFAULT" />
-                     </cursor>
-                  </TextField>
+                  <Label fx:id="lbl_Meldung" layoutX="18.0" layoutY="61.0" prefHeight="17.0" prefWidth="395.0" />
                </children>
             </AnchorPane>
          </children>
@@ -182,7 +178,7 @@
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
                   <Label layoutX="14.0" layoutY="40.0" text="Rabatt:" />
-                  <Slider fx:id="sld_Rabatt" blockIncrement="1.0" layoutX="60.0" layoutY="40.0" majorTickUnit="1.0" max="10.0" minorTickCount="1" onMouseReleased="#on_Rabatt_Slide" showTickLabels="true" showTickMarks="true" value="5.0">
+                  <Slider fx:id="sld_Rabatt" blockIncrement="1.0" layoutX="60.0" layoutY="40.0" majorTickUnit="1.0" max="10.0" minorTickCount="0" onMouseReleased="#on_Rabatt_Slide" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="5.0">
                      <cursor>
                         <Cursor fx:constant="E_RESIZE" />
                      </cursor></Slider>
@@ -191,7 +187,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor></Button>
                   <Label layoutX="14.0" layoutY="129.0" text="Preis:" />
-                  <TextField fx:id="txtPreis" editable="false" layoutX="52.0" layoutY="125.0" prefHeight="25.0" prefWidth="75.0">
+                  <TextField fx:id="txt_Preis" editable="false" layoutX="52.0" layoutY="125.0" prefHeight="25.0" prefWidth="75.0">
                      <cursor>
                         <Cursor fx:constant="DEFAULT" />
                      </cursor></TextField>
