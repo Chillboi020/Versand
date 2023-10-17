@@ -12,6 +12,9 @@ public class Person {
 
     //region CONSTRUCTORS
     public Person(String vorname, String nachname, String strasse, String hausNr, String plz, String ort) {
+        if (vorname.isBlank() && nachname.isBlank() && strasse.isBlank() && hausNr.isBlank() && plz.isBlank() && ort.isBlank()) {
+            throw new IllegalArgumentException("Leere Felder");
+        }
         setVorname(vorname);
         setNachname(nachname);
         setStrasse(strasse);
@@ -32,7 +35,7 @@ public class Person {
 
     public void setVorname(String vorname) {
         istBlank("Vorname", vorname);
-        istNummer("Vorname", vorname);
+        istNichtBuchstabe("Vorname", vorname);
         this.vorname = vorname;
     }
 
@@ -42,7 +45,7 @@ public class Person {
 
     public void setNachname(String nachname) {
         istBlank("Nachname", nachname);
-        istNummer("Nachname", nachname);
+        istNichtBuchstabe("Nachname", nachname);
         this.nachname = nachname;
     }
 
@@ -52,7 +55,7 @@ public class Person {
 
     public void setStrasse(String strasse) {
         istBlank("Straße", strasse);
-        istNummer("Straße", strasse);
+        istNichtBuchstabe("Straße", strasse);
         this.strasse = strasse;
     }
 
@@ -72,11 +75,7 @@ public class Person {
 
     public void setPlz(String plz) {
         istBlank("PLZ", plz);
-        for (int i = 0; i < plz.length(); i++) {
-            if (!Character.isDigit(plz.codePointAt(i))) {
-                throw new IllegalArgumentException("PLZ darf nur Zahlen enthalten!");
-            }
-        }
+        istNichtZahl("PLZ", plz);
         if (plz.length() != 5) {
             throw new IllegalArgumentException("PLZ muss 5 Zeichen lang sein!");
         }
@@ -89,7 +88,7 @@ public class Person {
 
     public void setOrt(String ort) {
         istBlank("Ort", ort);
-        istNummer("Ort", ort);
+        istNichtBuchstabe("Ort", ort);
         this.ort = ort;
     }
 
@@ -99,10 +98,18 @@ public class Person {
         }
     }
 
-    private void istNummer(String typ, String text) {
+    private void istNichtBuchstabe(String typ, String text) {
         for (int i = 0; i < text.length(); i++) {
-            if (Character.isDigit(text.codePointAt(i))) {
-                throw new IllegalArgumentException(typ + " darf keine Zahlen haben!");
+            if (!Character.isAlphabetic(text.codePointAt(i))) {
+                throw new IllegalArgumentException(typ + " darf nur Buchstaben enthalten!");
+            }
+        }
+    }
+
+    private void istNichtZahl(String typ, String text) {
+        for (int i = 0; i < text.length(); i++) {
+            if (!Character.isDigit(text.codePointAt(i))) {
+                throw new IllegalArgumentException(typ + " darf nur Zahlen enthalten!");
             }
         }
     }
@@ -111,13 +118,6 @@ public class Person {
 
     @Override
     public String toString() {
-        return "Person{" +
-                "vorname='" + vorname + '\'' +
-                ", nachname='" + nachname + '\'' +
-                ", strasse='" + strasse + '\'' +
-                ", hausNr='" + hausNr + '\'' +
-                ", plz='" + plz + '\'' +
-                ", ort='" + ort + '\'' +
-                '}';
+        return "Person{" + vorname + ", " + nachname + ", " + strasse + " " + hausNr + ", " + plz + ", " + ort + '}';
     }
 }
