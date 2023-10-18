@@ -1,4 +1,5 @@
 package de.edvschuleplattling.ekorn.classes;
+import static de.edvschuleplattling.ekorn.classes.Auftragexception.*;
 
 public class Person {
     //region ATTRIBUTES
@@ -8,12 +9,14 @@ public class Person {
     private String hausNr;
     private String plz;
     private String ort;
+    private final char PERSONART;
     //endregion
 
     //region CONSTRUCTORS
-    public Person(String vorname, String nachname, String strasse, String hausNr, String plz, String ort) {
+    public Person(char persArt, String vorname, String nachname, String strasse, String hausNr, String plz, String ort) {
+        this.PERSONART = persArt;
         if (vorname.isBlank() && nachname.isBlank() && strasse.isBlank() && hausNr.isBlank() && plz.isBlank() && ort.isBlank()) {
-            throw new IllegalArgumentException("Leere Felder");
+            throw new IllegalArgumentException(PERSONART + ": Leere Felder");
         }
         setVorname(vorname);
         setNachname(nachname);
@@ -24,7 +27,7 @@ public class Person {
     }
 
     public Person() {
-        this("Vorname", "Nachname", "Straße", "0", "00000", "Ort");
+        this('P', "V", "N", "Str", "0", "00000", "Ort");
     }
     //endregion
 
@@ -34,8 +37,7 @@ public class Person {
     }
 
     public void setVorname(String vorname) {
-        istBlank("Vorname", vorname);
-        istNichtBuchstabe("Vorname", vorname);
+        tryPerson("Vorname", vorname);
         this.vorname = vorname;
     }
 
@@ -44,8 +46,7 @@ public class Person {
     }
 
     public void setNachname(String nachname) {
-        istBlank("Nachname", nachname);
-        istNichtBuchstabe("Nachname", nachname);
+        tryPerson("Nachname", nachname);
         this.nachname = nachname;
     }
 
@@ -54,17 +55,17 @@ public class Person {
     }
 
     public void setStrasse(String strasse) {
-        istBlank("Straße", strasse);
-        istNichtBuchstabe("Straße", strasse);
+        tryPerson("Straße", strasse);
         this.strasse = strasse;
     }
 
     public String getHausNr() { return hausNr; }
 
     public void setHausNr(String hausNr) {
-        istBlank("HausNr", hausNr);
-        if (hausNr.length() > 3) {
-            throw new IllegalArgumentException("HausNr darf nur 3 Zeichen lang sein!");
+        try {
+            istBlank("HausNr", hausNr);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(PERSONART + ": " + e.getMessage());
         }
         this.hausNr = hausNr;
     }
@@ -74,10 +75,14 @@ public class Person {
     }
 
     public void setPlz(String plz) {
-        istBlank("PLZ", plz);
-        istNichtZahl("PLZ", plz);
+        try {
+            istBlank("PLZ", plz);
+            istNichtZahl("PLZ", plz);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(PERSONART + ": " + e.getMessage());
+        }
         if (plz.length() != 5) {
-            throw new IllegalArgumentException("PLZ muss 5 Zeichen lang sein!");
+            throw new IllegalArgumentException(PERSONART + ": PLZ muss 5 Zeichen lang sein!");
         }
         this.plz = plz;
     }
@@ -87,37 +92,22 @@ public class Person {
     }
 
     public void setOrt(String ort) {
-        istBlank("Ort", ort);
-        istNichtBuchstabe("Ort", ort);
+        tryPerson("Ort", ort);
         this.ort = ort;
-    }
-
-    private void istBlank(String typ, String text) {
-        if (text.isBlank()) {
-            throw new IllegalArgumentException(typ + " Pflichtfeld!");
-        }
-    }
-
-    private void istNichtBuchstabe(String typ, String text) {
-        for (int i = 0; i < text.length(); i++) {
-            if (!Character.isAlphabetic(text.codePointAt(i))) {
-                throw new IllegalArgumentException(typ + " darf nur Buchstaben enthalten!");
-            }
-        }
-    }
-
-    private void istNichtZahl(String typ, String text) {
-        for (int i = 0; i < text.length(); i++) {
-            if (!Character.isDigit(text.codePointAt(i))) {
-                throw new IllegalArgumentException(typ + " darf nur Zahlen enthalten!");
-            }
-        }
     }
     //endregion
 
+    public void tryPerson(String type, String txt) {
+        try {
+            istBlank(type, txt);
+            istNichtBuchstabe(type, txt);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(PERSONART + ": " + e.getMessage());
+        }
+    }
 
     @Override
     public String toString() {
-        return "Person{" + vorname + ", " + nachname + ", " + strasse + " " + hausNr + ", " + plz + ", " + ort + '}';
+        return vorname + ", " + nachname + ", " + strasse + " " + hausNr + ", " + plz + ", " + ort;
     }
 }

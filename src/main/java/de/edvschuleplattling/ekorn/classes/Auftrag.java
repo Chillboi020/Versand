@@ -1,6 +1,9 @@
 package de.edvschuleplattling.ekorn.classes;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+import static de.edvschuleplattling.ekorn.classes.Auftragexception.*;
 
 public class Auftrag {
     //region ATTRIBUTES
@@ -18,8 +21,20 @@ public class Auftrag {
     private double betrag;
     private double rabatt;
     private double preis;
+
+    private static final double[] BASISPREIS = {0.60, 3.20, 5.50};
+    private static final double[] EXPRESSAUFSCHLAG = {4.00, 6.00, 6.00};
+    private static final double[] VERSICHERUNGEN = {1.20, 2.00, 0.005};
+
     //endregion
 
+    //region ENUMS
+    public enum zTyp {BRIEF, PAECKCHEN, PAKET}
+
+    public enum vTyp {B100, B500, UE500}
+    //endregion
+
+    //region CONSTRUCTORS
     public Auftrag(String id, LocalDate aufgegeben, Person absender, Person empfaenger, String beschreibung,
                    boolean express, zTyp versandoption, LocalDate wunschtermin, String altAblageOrt,
                    boolean versichert, vTyp versicherung, double betrag, double rabatt) {
@@ -38,20 +53,23 @@ public class Auftrag {
         setRabatt(rabatt);
     }
 
+    public Auftrag() {
+        this("000000000000000", LocalDate.now(), null, null,
+                null, false, zTyp.BRIEF, null,
+                null, false, null, 500, 0);
+    }
+    //endregion
+
     //region GETTER/SETTER
     public String getId() {
         return id;
     }
 
     public void setId(String id) {
-        if (id.isBlank()) {
-            throw new IllegalArgumentException("ID: darf nicht leer sein!");
-        }
-
-        try {
-            Integer.parseInt(id);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("ID: keine Buchstaben!");
+        istBlank("ID", id);
+        istNichtZahl("ID", id);
+        if (id.length() != 15) {
+            throw new IllegalArgumentException("ID muss 15 Zeichen lang sein!");
         }
         this.id = id;
     }
@@ -61,6 +79,7 @@ public class Auftrag {
     }
 
     public void setAufgegeben(LocalDate aufgegeben) {
+        istBlank("Aufgabedatum", aufgegeben.format(DateTimeFormatter.ISO_LOCAL_DATE));
         this.aufgegeben = aufgegeben;
     }
 
@@ -133,6 +152,9 @@ public class Auftrag {
     }
 
     public void setVersicherung(vTyp versicherung) {
+        if (versicherung == vTyp.UE500 && betrag < 500.00) {
+            throw new IllegalArgumentException("Betrag muss größer als 500€ sein!");
+        }
         this.versicherung = versicherung;
     }
 
@@ -142,6 +164,15 @@ public class Auftrag {
 
     public void setBetrag(double betrag) {
         this.betrag = betrag;
+    }
+
+    public void setBetrag(String betrag) {
+        istBlank("Betrag", betrag);
+        try {
+            this.betrag = Double.parseDouble(betrag);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Betrag darf nur Zahlen enthalten");
+        }
     }
 
     public double getRabatt() {
@@ -162,12 +193,49 @@ public class Auftrag {
     //endregion
 
     public double berechne() {
-        return 0;
+        // Zustellpreis
+        int zTypIndex = getVersandoption().ordinal();
+        double zPreis = BASISPREIS[zTypIndex];
+        if (express) {
+            zPreis += EXPRESSAUFSCHLAG[zTypIndex];
+        }
+        if (wunschtermin != null) {
+            zPreis += 0.50;
+        }
+
+        // versicherungspreis
+        double vPreis = 0;
+        if (versichert) {
+            int vTypIndex = getVersicherung().ordinal();
+            if (vTypIndex != 2) {
+                vPreis = VERSICHERUNGEN[vTypIndex];
+            } else {
+                vPreis = getBetrag() * VERSICHERUNGEN[vTypIndex];
+            }
+        }
+        double preis = (zPreis + vPreis) * ((100 - getRabatt()) / 100);
+        setPreis(preis);
+        return preis;
     }
 
-    // ENUMS
-    public enum zTyp {BRIEF, PAECKCHEN, PAKET}
-
-    public enum vTyp {B100, B500, UE500}
+    @Override
+    public String toString() {
+        return "Auftrag '" + id + "' (aufgegeben am: " + aufgegeben + ')' +
+                "\n==================================================" +
+                "\nAbsender: " + absender +
+                "\nEmpfänger: " + empfaenger +
+                "\nBeschreibung: " + beschreibung +
+                "\n--------------------------------------------------" +
+                "\nExpress: " + express + ", Versandoption: " + versandoption +
+                "\nWunschtermin: " + '\''+ wunschtermin + '\'' +
+                ", alternativer Ablageort: " + altAblageOrt +
+                "\n--------------------------------------------------" +
+                "\nVersichert: " + versichert + " (" + versicherung + ") " +
+                ", Betrag: " + betrag +
+                "\n--------------------------------------------------" +
+                "\nRabatt: " + rabatt +
+                ", Preis: " + preis +
+                "\n==================================================";
+    }
 }
 
