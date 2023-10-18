@@ -1,0 +1,60 @@
+Daten aus dem Programm werden in Form einer CSV-Datei abgespeichert:
+===================================================================================================
+ID*;Aufgegeben*; 2
+
+aVorname*;aName*;aStrasse*;aNr;aPLZ*;aOrt*; 6
+
+eVorname*;eName*;eStrasse*;eNr;ePLZ*;eOrt*; 6
+
+Beschreibung(-); 1
+
+Express(true/false)*;BRIEF/PAECKCHEN/PAKET*;Wunschtermin(-);AltAblageText(*); 4
+
+Versicherung(true/false)*;B100/B500/UE500(*);Betrag(*); 3
+
+Rabatt*;Preis* 2
+===================================================================================================
+Gesamt: 25 Datensätze
+
+ *  - Pflichtfeld
+(*) - Pflichtfeld, wenn Bedingung erfüllt
+(-) - optionales Feld
+
+===================================================================================================
+Mögliche FESTE Preise laut Preisregeln (ohne Rabatte oder Beträge über 500€):
+-------------------------------------------------
+Brief:
+- Basis: 		 	         0.60€
++ Exp.: 		 	         4.60€
++ W.Ter.: 			         1.10€
+
++ Exp. u. W.Ter.: 	 	     5.10€
+-------------------------------------------------
+Päckchen:
+- Basis: 		 	         3.20€
++ Exp.: 		 	         9.20€
++ W.Term.: 		             3.70€
++ V.100€:		 	         4.40€
++ V.500€:			         5.20€
+
++ Exp. u. W.Ter.: 	 	     9.70€
++ Exp. + V.100€:		    10.40€
++ Exp. + V.500€:		    11.20€
+
++ Exp. + W.Term. + V.100:	10.90€
++ Exp. + W.Term. + V.500:	11.70€
+-------------------------------------------------
+Paket:
+- Basis:			         5.50€
++ Exp.:			            11.50€
++ W.Term.:		             6.00€
++ V.100€:			         6.70€
++ V.500€:			         7.50€
+
++ Exp. u. W.Ter.: 	 	    12.00€
++ Exp. + V.100€:		    12.70€
++ Exp. + V.500€:		    13.50€
+
++ Exp. + W.Term. + V.100:	13.20€
++ Exp. + W.Term. + V.500:	14.00€
+-------------------------------------------------

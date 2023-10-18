@@ -25,10 +25,6 @@ public class Person {
         setPlz(plz);
         setOrt(ort);
     }
-
-    public Person() {
-        this('P', "V", "N", "Str", "0", "00000", "Ort");
-    }
     //endregion
 
     //region GETTER/SETTER
@@ -97,6 +93,7 @@ public class Person {
     }
     //endregion
 
+    // Fehlerprüfungen für einige Felder
     public void tryPerson(String type, String txt) {
         try {
             istBlank(type, txt);

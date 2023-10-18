@@ -1,5 +1,6 @@
 package de.edvschuleplattling.ekorn.classes;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -25,6 +26,7 @@ public class Auftrag {
     private static final double[] BASISPREIS = {0.60, 3.20, 5.50};
     private static final double[] EXPRESSAUFSCHLAG = {4.00, 6.00, 6.00};
     private static final double[] VERSICHERUNGEN = {1.20, 2.00, 0.005};
+    private static final DecimalFormat DEC = new DecimalFormat("#0.00");
 
     //endregion
 
@@ -56,7 +58,7 @@ public class Auftrag {
     public Auftrag() {
         this("000000000000000", LocalDate.now(), null, null,
                 null, false, zTyp.BRIEF, null,
-                null, false, null, 500, 0);
+                null, false, null, 0, 0);
     }
     //endregion
 
@@ -152,10 +154,14 @@ public class Auftrag {
     }
 
     public void setVersicherung(vTyp versicherung) {
-        if (versicherung == vTyp.UE500 && betrag < 500.00) {
-            throw new IllegalArgumentException("Betrag muss größer als 500€ sein!");
+        if (versicherung != vTyp.UE500) {
+            setBetrag(0);
         }
-        this.versicherung = versicherung;
+        if (versandoption != zTyp.BRIEF && versichert) {
+            this.versicherung = versicherung;
+        } else {
+            this.versicherung = null;
+        }
     }
 
     public double getBetrag() {
@@ -168,8 +174,12 @@ public class Auftrag {
 
     public void setBetrag(String betrag) {
         istBlank("Betrag", betrag);
+        double btrg = Double.parseDouble(betrag);
+        if (versicherung == vTyp.UE500 && btrg <= 500.00) {
+            throw new IllegalArgumentException("Betrag muss größer als 500€ sein!");
+        }
         try {
-            this.betrag = Double.parseDouble(betrag);
+            this.betrag = btrg;
         } catch (Exception e) {
             throw new IllegalArgumentException("Betrag darf nur Zahlen enthalten");
         }
@@ -187,12 +197,12 @@ public class Auftrag {
         return preis;
     }
 
-    private void setPreis(double preis) {
+    public void setPreis(double preis) {
         this.preis = preis;
     }
     //endregion
 
-    public double berechne() {
+    public String berechne() {
         // Zustellpreis
         int zTypIndex = getVersandoption().ordinal();
         double zPreis = BASISPREIS[zTypIndex];
@@ -213,9 +223,13 @@ public class Auftrag {
                 vPreis = getBetrag() * VERSICHERUNGEN[vTypIndex];
             }
         }
+
+        // Gesamtpreis
         double preis = (zPreis + vPreis) * ((100 - getRabatt()) / 100);
+        String preisString = DEC.format(preis).replace(',', '.');
+        preis = Double.parseDouble(preisString);
         setPreis(preis);
-        return preis;
+        return preisString;
     }
 
     @Override
@@ -231,10 +245,10 @@ public class Auftrag {
                 ", alternativer Ablageort: " + altAblageOrt +
                 "\n--------------------------------------------------" +
                 "\nVersichert: " + versichert + " (" + versicherung + ") " +
-                ", Betrag: " + betrag +
+                ", Betrag: " + betrag + "€" +
                 "\n--------------------------------------------------" +
-                "\nRabatt: " + rabatt +
-                ", Preis: " + preis +
+                "\nRabatt: " + rabatt + "%" +
+                ", Preis: " + preis + "€" +
                 "\n==================================================";
     }
 }

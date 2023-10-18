@@ -1,6 +1,7 @@
 package de.edvschuleplattling.ekorn;
 
 import de.edvschuleplattling.ekorn.classes.Auftrag;
+import de.edvschuleplattling.ekorn.classes.Datenverarbeitung;
 import de.edvschuleplattling.ekorn.classes.Person;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -11,7 +12,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
 
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.time.DayOfWeek;
@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class VersandController implements Initializable {
-
     //region FXML Variablen
     //region Oberer Bereich
     @FXML
@@ -29,6 +28,8 @@ public class VersandController implements Initializable {
     private DatePicker dtp_Aufgegeben;
     @FXML
     private Label lbl_Meldung;
+    @FXML
+    private Button btn_Speichern;
     //endregion
     //region Absender (PFLICHTFELD)
     @FXML
@@ -62,7 +63,7 @@ public class VersandController implements Initializable {
     @FXML
     private TextArea txta_Beschreibung;
     //endregion
-    //region Zustellung (PFLICHTFELD)
+    //region Zustellung
     @FXML
     private CheckBox cb_Express;
     @FXML
@@ -98,38 +99,33 @@ public class VersandController implements Initializable {
     @FXML
     private TextField txt_Betrag;
     //endregion
-    //region Preisberechnung (PFLICHTFELD)
+    //region Preisberechnung
     @FXML
     private Slider sld_Rabatt;
-    @FXML
-    private Button btn_Berechne;
     @FXML
     private TextField txt_Preis;
     //endregion
     //endregion
 
     //region Controller Variablen
-    private ToggleGroup zTypen = new ToggleGroup();
-    private ToggleGroup vTypen = new ToggleGroup();
+    private final ToggleGroup ZTYPEN = new ToggleGroup();
+    private final ToggleGroup VTYPEN = new ToggleGroup();
     private ArrayList<TextField> absenderList;
     private ArrayList<TextField> empfaengerList;
     private Auftrag auftrag = new Auftrag();
-    private Person absender = new Person();
-    private Person empfaenger = new Person();
-
-    private final DecimalFormat dec = new DecimalFormat("#0.00");
+    private static final DecimalFormat DEC = new DecimalFormat("#0.00");
     //endregion
 
     //region FXML Methoden
     //region Oberer Bereich
     @FXML
     public void on_Speichern_Click() {
-
+        speichern();
     }
 
     @FXML
     public void on_Laden_Click() {
-        System.out.println("Laden");
+        laden();
     }
 
     @FXML
@@ -141,7 +137,9 @@ public class VersandController implements Initializable {
     //region Zustellung (fertig)
     @FXML
     public void on_Ztyp_Select() {
-        RadioButton rb = (RadioButton) zTypen.getSelectedToggle();
+        kannSpeichern(false);
+        // Versandtypen haben einen Einfluss auf die Versicherung
+        RadioButton rb = (RadioButton) ZTYPEN.getSelectedToggle();
         switch (rb.getText()) {
             case "Brief" -> versicherungVisibility(false);
             case "Päckchen", "Paket" -> versicherungVisibility(true);
@@ -150,17 +148,20 @@ public class VersandController implements Initializable {
 
     @FXML
     public void on_Wunschtermin_Picked() {
+        kannSpeichern(false);
         btn_Wunschtermin_Reset.setVisible(true);
     }
 
     @FXML
     public void on_Wunschtermin_Reset_Click() {
+        kannSpeichern(false);
         dtp_Wunschtermin.setValue(null);
         btn_Wunschtermin_Reset.setVisible(false);
     }
 
     @FXML
     public void on_AltAblage_Check() {
+        kannSpeichern(false);
         txta_AltAblage.setDisable(!cb_AltAblage.isSelected());
         if (!cb_AltAblage.isSelected()) txta_AltAblage.clear();
     }
@@ -169,12 +170,14 @@ public class VersandController implements Initializable {
     //region Versicherung (fertig)
     @FXML
     public void on_Versichert_Check() {
+        kannSpeichern(false);
         vTypenVisibility(cb_Versichert.isSelected());
     }
 
     @FXML
     public void on_Vtyp_Selected() {
-        RadioButton rb = (RadioButton) vTypen.getSelectedToggle();
+        kannSpeichern(false);
+        RadioButton rb = (RadioButton) VTYPEN.getSelectedToggle();
         String rbText = rb.getText();
 
         switch (rbText) {
@@ -186,18 +189,13 @@ public class VersandController implements Initializable {
 
     //region Preisberechnung
     @FXML
-    public void on_Rabatt_Slide() {
+    public void on_Rabatt_Slided() {
+        kannSpeichern(false);
     }
 
     @FXML
     public void on_Berechne_Click() {
-        try {
-            auftragErfassung();
-            txt_Preis.setText(String.valueOf(auftrag.berechne()));
-            System.out.println(auftrag);
-        } catch (IllegalArgumentException msg) {
-            setMeldung(msg.getMessage(), Color.rgb(200, 0, 0));
-        }
+        berechnen();
     }
     //endregion
     //endregion
@@ -208,21 +206,31 @@ public class VersandController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Liste mit Textfeldern wird befüllt
         absenderList = new ArrayList<>() {{
-            add(txt_A_Vname); add(txt_A_Nname); add(txt_A_Str); add(txt_A_Str_Nr); add(txt_A_PLZ); add(txt_A_Ort);
+            add(txt_A_Vname);
+            add(txt_A_Nname);
+            add(txt_A_Str);
+            add(txt_A_Str_Nr);
+            add(txt_A_PLZ);
+            add(txt_A_Ort);
         }};
         empfaengerList = new ArrayList<>() {{
-            add(txt_E_Vname); add(txt_E_Nname); add(txt_E_Str); add(txt_E_Str_Nr); add(txt_E_PLZ); add(txt_E_Ort);
+            add(txt_E_Vname);
+            add(txt_E_Nname);
+            add(txt_E_Str);
+            add(txt_E_Str_Nr);
+            add(txt_E_PLZ);
+            add(txt_E_Ort);
         }};
 
         // Togglegroup Zustelltypen
-        rb_Brief.setToggleGroup(zTypen);
-        rb_Paeckchen.setToggleGroup(zTypen);
-        rb_Paket.setToggleGroup(zTypen);
+        rb_Brief.setToggleGroup(ZTYPEN);
+        rb_Paeckchen.setToggleGroup(ZTYPEN);
+        rb_Paket.setToggleGroup(ZTYPEN);
 
         // Togglegroup Versicherungstypen
-        rb_bis100.setToggleGroup(vTypen);
-        rb_bis500.setToggleGroup(vTypen);
-        rb_ue500.setToggleGroup(vTypen);
+        rb_bis100.setToggleGroup(VTYPEN);
+        rb_bis500.setToggleGroup(VTYPEN);
+        rb_ue500.setToggleGroup(VTYPEN);
 
         // Deaktiviert Sonntage im Wunschtermin
         dtp_Wunschtermin.setDayCellFactory(deaktiviereSonntag());
@@ -236,7 +244,9 @@ public class VersandController implements Initializable {
         reset();
     }
 
+    // Wenn Reset gedrückt wird, das Laden von Daten fehlschlägt, oder beim Programmstart
     public void reset() {
+        kannSpeichern(false);
         // Oberer Bereich
         txt_ID.clear();
         // Datum auf heutigen Tag setzen
@@ -270,11 +280,18 @@ public class VersandController implements Initializable {
         txt_Preis.clear();
     }
 
+    // Im Falle eines Fehlers wird eine Meldung ausgegeben
     public void setMeldung(String msg, Color clr) {
         lbl_Meldung.setText(msg);
         lbl_Meldung.setTextFill(clr);
     }
 
+    // Bei Veränderungen muss der Preis aktualisiert werden, damit man den Auftrag speichern kann
+    public void kannSpeichern(boolean b) {
+        btn_Speichern.setDisable(!b);
+    }
+
+    // erfasst den Auftrag
     public void auftragErfassung() {
         ArrayList<String> aList = new ArrayList<>();
         for (TextField a : absenderList) {
@@ -294,31 +311,32 @@ public class VersandController implements Initializable {
             auftrag.setAufgegeben(dtp_Aufgegeben.getValue());
 
             // Absender, Empfänger, Beschreibung
-            absender = new Person('A', aList.get(0), aList.get(1), aList.get(2), aList.get(3), aList.get(4), aList.get(5));
-            empfaenger = new Person('E', eList.get(0), eList.get(1), eList.get(2), eList.get(3), eList.get(4), eList.get(5));
+            Person absender = new Person('A', aList.get(0), aList.get(1), aList.get(2), aList.get(3), aList.get(4), aList.get(5));
+            Person empfaenger = new Person('E', eList.get(0), eList.get(1), eList.get(2), eList.get(3), eList.get(4), eList.get(5));
             auftrag.setAbsender(absender);
             auftrag.setEmpfaenger(empfaenger);
             auftrag.setBeschreibung(txta_Beschreibung.getText());
 
             // Zustellung
             auftrag.setExpress(cb_Express.isSelected());
-            RadioButton rb = (RadioButton) zTypen.getSelectedToggle();
+            RadioButton rb = (RadioButton) ZTYPEN.getSelectedToggle();
             Auftrag.zTyp zTyp = null;
             switch (rb.getText()) {
                 case "Brief" -> zTyp = Auftrag.zTyp.BRIEF;
                 case "Päckchen" -> zTyp = Auftrag.zTyp.PAECKCHEN;
                 case "Paket" -> zTyp = Auftrag.zTyp.PAKET;
-            };
+            }
+
             auftrag.setVersandoption(zTyp);
             auftrag.setWunschtermin(dtp_Wunschtermin.getValue());
-            if (cb_AltAblage.isSelected() && txta_AltAblage.getText().equals("")) {
+            if (cb_AltAblage.isSelected() && txta_AltAblage.getText().isEmpty()) {
                 throw new IllegalArgumentException("Alt. Ablageort Pflichtfeld!");
             }
             auftrag.setAltAblageOrt(txta_AltAblage.getText());
 
             // Versicherung
             auftrag.setVersichert(cb_Versichert.isSelected());
-            rb = (RadioButton) vTypen.getSelectedToggle();
+            rb = (RadioButton) VTYPEN.getSelectedToggle();
             Auftrag.vTyp vTyp = null;
             switch (rb.getText()) {
                 case "<= 100€" -> vTyp = Auftrag.vTyp.B100;
@@ -329,13 +347,130 @@ public class VersandController implements Initializable {
             if (rb.getText().equals(" >  500€")) {
                 auftrag.setBetrag(txt_Betrag.getText());
             }
-
             auftrag.setRabatt(sld_Rabatt.getValue());
-
-            setMeldung("", Color.BLACK);
+            setMeldung("Keine Fehler", Color.GREEN);
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }
+    }
+
+    // holt den Auftrag und setzt alle Felder mit den richtigen Werten
+    public void setFelder() {
+        // Oberer Bereich
+        txt_ID.setText(auftrag.getId());
+        dtp_Aufgegeben.setValue(auftrag.getAufgegeben());
+
+        // Absender
+        absenderList.get(0).setText(auftrag.getAbsender().getVorname());
+        absenderList.get(1).setText(auftrag.getAbsender().getNachname());
+        absenderList.get(2).setText(auftrag.getAbsender().getStrasse());
+        absenderList.get(3).setText(auftrag.getAbsender().getHausNr());
+        absenderList.get(4).setText(auftrag.getAbsender().getPlz());
+        absenderList.get(5).setText(auftrag.getAbsender().getOrt());
+
+        // Empfänger
+        empfaengerList.get(0).setText(auftrag.getEmpfaenger().getVorname());
+        empfaengerList.get(1).setText(auftrag.getEmpfaenger().getNachname());
+        empfaengerList.get(2).setText(auftrag.getEmpfaenger().getStrasse());
+        empfaengerList.get(3).setText(auftrag.getEmpfaenger().getHausNr());
+        empfaengerList.get(4).setText(auftrag.getEmpfaenger().getPlz());
+        empfaengerList.get(5).setText(auftrag.getEmpfaenger().getOrt());
+
+        // Beschreibung
+        txta_Beschreibung.setText(auftrag.getBeschreibung());
+
+        // Zustellung
+        cb_Express.setSelected(auftrag.isExpress());
+        switch (auftrag.getVersandoption()) {
+            case BRIEF -> rb_Brief.setSelected(true);
+            case PAECKCHEN -> rb_Paeckchen.setSelected(true);
+            case PAKET -> rb_Paket.setSelected(true);
+        }
+        on_Ztyp_Select();
+        if (auftrag.getWunschtermin() != null) {
+            dtp_Wunschtermin.setValue(auftrag.getWunschtermin());
+            on_Wunschtermin_Picked();
+        }
+        if (auftrag.getAltAblageOrt() != null) {
+            cb_AltAblage.setSelected(true);
+            on_AltAblage_Check();
+            txta_AltAblage.setText(auftrag.getAltAblageOrt());
+        }
+
+        // Versicherung
+        cb_Versichert.setSelected(auftrag.isVersichert());
+        on_Versichert_Check();
+        if (auftrag.isVersichert() && auftrag.getVersandoption() != Auftrag.zTyp.BRIEF) {
+            switch (auftrag.getVersicherung()) {
+                case B100 -> rb_bis100.setSelected(true);
+                case B500 -> rb_bis500.setSelected(true);
+                case UE500 -> rb_ue500.setSelected(true);
+            }
+            on_Vtyp_Selected();
+            if (auftrag.getVersicherung() == Auftrag.vTyp.UE500) {
+                txt_Betrag.setText(DEC.format(auftrag.getBetrag()));
+            }
+        }
+
+        // Preisberechnung
+        sld_Rabatt.setValue(auftrag.getRabatt());
+        txt_Preis.setText(DEC.format(auftrag.getPreis()));
+    }
+
+    // Der Speicherprozess
+    public void speichern() {
+        try {
+            String file = getFile();
+            String msg = Datenverarbeitung.toCSV(file, auftrag);
+            reset();
+
+            // Wenn Speichern erfolgreich war
+            setMeldung(msg, Color.rgb(0, 200, 0));
+        } catch (Exception e) {
+            setMeldung(e.getMessage(), Color.rgb(200, 0, 0));
+        }
+    }
+
+    // Der Ladeprozess
+    public void laden() {
+        try {
+            String file = getFile();
+            System.out.println(file);
+
+            Auftrag a = new Auftrag();
+            a.setId(txt_ID.getText());
+            auftrag = Datenverarbeitung.fromCSV(file, a.getId());
+
+            // Falls keine ID gefunden wurde
+            if (auftrag == null) {
+                throw new IllegalArgumentException("Keine passende ID vorhanden!");
+            }
+
+            // Falls Laden erfolgreich war
+            setFelder();
+            setMeldung("Laden erfolgreich", Color.rgb(0, 200, 0));
+        } catch (Exception e) {
+            reset();
+            setMeldung(e.getMessage(), Color.rgb(200, 0, 0));
+        }
+    }
+
+    // Der Berechnungsprozess
+    public void berechnen() {
+        try {
+            auftragErfassung();
+            txt_Preis.setText(auftrag.berechne());
+
+            // Bei erfolgreicher Berechnung kann man speichern
+            kannSpeichern(true);
+        } catch (IllegalArgumentException msg) {
+            setMeldung(msg.getMessage(), Color.rgb(200, 0, 0));
+        }
+    }
+
+    // holt den Dateipfad und setzt den Namen der .csv Datei
+    public String getFile() {
+        return "files\\versand-" + dtp_Aufgegeben.getValue() + ".csv";
     }
 
     //region Filter
@@ -364,7 +499,7 @@ public class VersandController implements Initializable {
             @Override
             // Wird aufgerufen, wenn etwas in das Textfeld geschrieben wird
             public void changed(final ObservableValue<? extends String> ov, final String oldValue, final String newValue) {
-                // Sobald die Höchstgrenze überschritten wird, sorgt man dafür, dass nichts weiteres geschrieben werden kann
+                // Sobald die Höchstgrenze überschritten wird, sorgt man dafür, dass nichts Weiteres geschrieben werden kann
                 if (tf.getText().length() > maxLength) {
                     String s = tf.getText().substring(0, maxLength);
                     tf.setText(s);
@@ -375,6 +510,7 @@ public class VersandController implements Initializable {
     //endregion
 
     //region Sichtbarkeit für Versicherung
+    //blendet den Versicherungsbereich aus, wenn Brief ausgewählt
     public void versicherungVisibility(boolean b) {
         tpane_Versicherung.setVisible(b);
         if (!b) {
@@ -384,6 +520,7 @@ public class VersandController implements Initializable {
         }
     }
 
+    // Blendet die Radiobuttons aus, wenn versichert false ist
     public void vTypenVisibility(boolean b) {
         pane_Versicherung.setVisible(b);
         if (!b) {
@@ -392,6 +529,7 @@ public class VersandController implements Initializable {
         }
     }
 
+    // Blendet den Betrag aus, wenn über 500€ nicht ausgewählt ist
     public void betragVisibility(boolean b) {
         pane_Betrag.setVisible(b);
         if (!b) {
@@ -400,5 +538,6 @@ public class VersandController implements Initializable {
             txt_Betrag.setText("500.01");
         }
     }
+    //endregion
     //endregion
 }
