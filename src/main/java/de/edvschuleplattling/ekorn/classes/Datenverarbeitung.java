@@ -32,7 +32,6 @@ public class Datenverarbeitung {
                     auftraege.remove(i);
                     auftraege.add(i, auftrag);
                 }
-                System.out.println(auftraege.get(i));
             }
 
             String line;
@@ -44,7 +43,6 @@ public class Datenverarbeitung {
             } else {
                 FileWriter fw = new FileWriter(path);
                 for (Auftrag a : auftraege) {
-                    System.out.println("Auftrag");
                     line = buildLine(a);
                     fw.write(line + "\n");
                 }
@@ -144,7 +142,7 @@ public class Datenverarbeitung {
         // 17 Wunschtermin
         if (!daten[17].equals("null")) a.setWunschtermin(LocalDate.parse(daten[17]));
         // 18 Alt. Ablageort
-        if (!daten[18].isEmpty()) a.setAltAblageOrt(daten[18]);
+        if (!daten[18].equals("null")) a.setAltAblageOrt(daten[18]);
 
         // 19 Versichert
         a.setVersichert(Boolean.parseBoolean(daten[19]));

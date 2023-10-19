@@ -113,6 +113,7 @@ public class VersandController implements Initializable {
     private ArrayList<TextField> absenderList;
     private ArrayList<TextField> empfaengerList;
     private Auftrag auftrag = new Auftrag();
+    private boolean istGeladen;
     private static final DecimalFormat DEC = new DecimalFormat("#0.00");
     //endregion
 
@@ -247,6 +248,7 @@ public class VersandController implements Initializable {
     // Wenn Reset gedrückt wird, das Laden von Daten fehlschlägt, oder beim Programmstart
     public void reset() {
         kannSpeichern(false);
+        istGeladen = false;
         // Oberer Bereich
         txt_ID.clear();
         // Datum auf heutigen Tag setzen
@@ -305,7 +307,7 @@ public class VersandController implements Initializable {
         try {
             // Oberer Bereich
             auftrag.setId(txt_ID.getText());
-            if (dtp_Aufgegeben.getValue().isBefore(LocalDate.now())) {
+            if (dtp_Aufgegeben.getValue().isBefore(LocalDate.now()) && !istGeladen) {
                 throw new IllegalArgumentException("Aufgabedatum darf nicht in der Vergangenheit liegen");
             }
             auftrag.setAufgegeben(dtp_Aufgegeben.getValue());
@@ -332,7 +334,7 @@ public class VersandController implements Initializable {
             if (cb_AltAblage.isSelected() && txta_AltAblage.getText().isEmpty()) {
                 throw new IllegalArgumentException("Alt. Ablageort Pflichtfeld!");
             }
-            auftrag.setAltAblageOrt(txta_AltAblage.getText());
+            if (!txta_AltAblage.getText().isEmpty()) auftrag.setAltAblageOrt(txta_AltAblage.getText());
 
             // Versicherung
             auftrag.setVersichert(cb_Versichert.isSelected());
@@ -348,7 +350,7 @@ public class VersandController implements Initializable {
                 auftrag.setBetrag(txt_Betrag.getText());
             }
             auftrag.setRabatt(sld_Rabatt.getValue());
-            setMeldung("Keine Fehler", Color.GREEN);
+            setMeldung("Berechnung erfolgreich", Color.rgb(0, 200, 0));
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }
@@ -448,6 +450,7 @@ public class VersandController implements Initializable {
 
             // Falls Laden erfolgreich war
             setFelder();
+            istGeladen = true;
             setMeldung("Laden erfolgreich", Color.rgb(0, 200, 0));
         } catch (Exception e) {
             reset();
