@@ -437,7 +437,6 @@ public class VersandController implements Initializable {
     public void laden() {
         try {
             String file = getFile();
-            System.out.println(file);
 
             Auftrag a = new Auftrag();
             a.setId(txt_ID.getText());
