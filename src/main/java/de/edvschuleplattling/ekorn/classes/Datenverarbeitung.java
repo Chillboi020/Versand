@@ -76,6 +76,9 @@ public class Datenverarbeitung {
                     break;
                 }
             }
+
+            sc.close();
+            fr.close();
         } catch (Exception e) {
             throw new IllegalArgumentException("Die Datei existiert nicht!");
         }
