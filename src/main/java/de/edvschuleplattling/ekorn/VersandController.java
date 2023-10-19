@@ -304,56 +304,54 @@ public class VersandController implements Initializable {
             eList.add(e.getText());
         }
 
-        try {
-            // Oberer Bereich
-            auftrag.setId(txt_ID.getText());
-            if (dtp_Aufgegeben.getValue().isBefore(LocalDate.now()) && !istGeladen) {
-                throw new IllegalArgumentException("Aufgabedatum darf nicht in der Vergangenheit liegen");
-            }
-            auftrag.setAufgegeben(dtp_Aufgegeben.getValue());
-
-            // Absender, Empfänger, Beschreibung
-            Person absender = new Person('A', aList.get(0), aList.get(1), aList.get(2), aList.get(3), aList.get(4), aList.get(5));
-            Person empfaenger = new Person('E', eList.get(0), eList.get(1), eList.get(2), eList.get(3), eList.get(4), eList.get(5));
-            auftrag.setAbsender(absender);
-            auftrag.setEmpfaenger(empfaenger);
-            auftrag.setBeschreibung(txta_Beschreibung.getText());
-
-            // Zustellung
-            auftrag.setExpress(cb_Express.isSelected());
-            RadioButton rb = (RadioButton) ZTYPEN.getSelectedToggle();
-            Auftrag.zTyp zTyp = null;
-            switch (rb.getText()) {
-                case "Brief" -> zTyp = Auftrag.zTyp.BRIEF;
-                case "Päckchen" -> zTyp = Auftrag.zTyp.PAECKCHEN;
-                case "Paket" -> zTyp = Auftrag.zTyp.PAKET;
-            }
-
-            auftrag.setVersandoption(zTyp);
-            auftrag.setWunschtermin(dtp_Wunschtermin.getValue());
-            if (cb_AltAblage.isSelected() && txta_AltAblage.getText().isEmpty()) {
-                throw new IllegalArgumentException("Alt. Ablageort Pflichtfeld!");
-            }
-            if (!txta_AltAblage.getText().isEmpty()) auftrag.setAltAblageOrt(txta_AltAblage.getText());
-
-            // Versicherung
-            auftrag.setVersichert(cb_Versichert.isSelected());
-            rb = (RadioButton) VTYPEN.getSelectedToggle();
-            Auftrag.vTyp vTyp = null;
-            switch (rb.getText()) {
-                case "<= 100€" -> vTyp = Auftrag.vTyp.B100;
-                case "<= 500€" -> vTyp = Auftrag.vTyp.B500;
-                case " >  500€" -> vTyp = Auftrag.vTyp.UE500;
-            }
-            auftrag.setVersicherung(vTyp);
-            if (rb.getText().equals(" >  500€")) {
-                auftrag.setBetrag(txt_Betrag.getText());
-            }
-            auftrag.setRabatt(sld_Rabatt.getValue());
-            setMeldung("Berechnung erfolgreich", Color.rgb(0, 200, 0));
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e.getMessage());
+        // Oberer Bereich
+        auftrag.setId(txt_ID.getText());
+        if (dtp_Aufgegeben.getValue().isBefore(LocalDate.now()) && !istGeladen) {
+            throw new IllegalArgumentException("Aufgabedatum darf nicht in der Vergangenheit liegen");
         }
+        auftrag.setAufgegeben(dtp_Aufgegeben.getValue());
+
+        // Absender, Empfänger, Beschreibung
+        Person absender = new Person('A', aList.get(0), aList.get(1), aList.get(2), aList.get(3), aList.get(4), aList.get(5));
+        Person empfaenger = new Person('E', eList.get(0), eList.get(1), eList.get(2), eList.get(3), eList.get(4), eList.get(5));
+        auftrag.setAbsender(absender);
+        auftrag.setEmpfaenger(empfaenger);
+        auftrag.setBeschreibung(txta_Beschreibung.getText());
+
+        if (cb_AltAblage.isSelected() && txta_AltAblage.getText().isEmpty()) {
+            throw new IllegalArgumentException("Alt. Ablageort Pflichtfeld!");
+        }
+        if (!txta_AltAblage.getText().isEmpty()) auftrag.setAltAblageOrt(txta_AltAblage.getText());
+    }
+
+    public void auftragBerechnung() {
+        // Zustellung
+        auftrag.setExpress(cb_Express.isSelected());
+        RadioButton rb = (RadioButton) ZTYPEN.getSelectedToggle();
+        Auftrag.zTyp zTyp = null;
+        switch (rb.getText()) {
+            case "Brief" -> zTyp = Auftrag.zTyp.BRIEF;
+            case "Päckchen" -> zTyp = Auftrag.zTyp.PAECKCHEN;
+            case "Paket" -> zTyp = Auftrag.zTyp.PAKET;
+        }
+        auftrag.setVersandoption(zTyp);
+        auftrag.setWunschtermin(dtp_Wunschtermin.getValue());
+
+        // Versicherung
+        auftrag.setVersichert(cb_Versichert.isSelected());
+        rb = (RadioButton) VTYPEN.getSelectedToggle();
+        Auftrag.vTyp vTyp = null;
+        switch (rb.getText()) {
+            case "<= 100€" -> vTyp = Auftrag.vTyp.B100;
+            case "<= 500€" -> vTyp = Auftrag.vTyp.B500;
+            case " >  500€" -> vTyp = Auftrag.vTyp.UE500;
+        }
+        auftrag.setVersicherung(vTyp);
+        if (rb.getText().equals(" >  500€")) {
+            auftrag.setBetrag(txt_Betrag.getText());
+        }
+        auftrag.setRabatt(sld_Rabatt.getValue());
+        setMeldung("Berechnung erfolgreich", Color.rgb(0, 200, 0));
     }
 
     // holt den Auftrag und setzt alle Felder mit den richtigen Werten
@@ -423,6 +421,7 @@ public class VersandController implements Initializable {
     public void speichern() {
         try {
             String file = getFile();
+            auftragErfassung();
             String msg = Datenverarbeitung.toCSV(file, auftrag);
             reset();
 
@@ -460,9 +459,8 @@ public class VersandController implements Initializable {
     // Der Berechnungsprozess
     public void berechnen() {
         try {
-            auftragErfassung();
+            auftragBerechnung();
             txt_Preis.setText(auftrag.berechne());
-
             // Bei erfolgreicher Berechnung kann man speichern
             kannSpeichern(true);
         } catch (IllegalArgumentException msg) {
