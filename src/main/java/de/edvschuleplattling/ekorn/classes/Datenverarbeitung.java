@@ -1,5 +1,6 @@
 package de.edvschuleplattling.ekorn.classes;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,9 +15,14 @@ public class Datenverarbeitung {
         ArrayList<Auftrag> auftraege = new ArrayList<>();
         String msg = "Neuer Auftrag gespeichert: " + path;
         try {
+            // Falls Datei nicht existiert
+            File file = new File(path);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
             // Zuerst werden alle Aufträge geholt
             boolean neuerAuftrag = true;
-            FileReader fr = new FileReader(path);
+            FileReader fr = new FileReader(file);
             Scanner sc = new Scanner(fr);
 
             while (sc.hasNextLine()) {
@@ -36,9 +42,9 @@ public class Datenverarbeitung {
 
             String line;
             if (neuerAuftrag) {
-                FileWriter fw = new FileWriter(path, true);
+                FileWriter fw = new FileWriter(file, true);
                 line = buildLine(auftrag);
-                fw.append(line).append("\n");
+                fw.write(line + "\n");
                 fw.close();
             } else {
                 FileWriter fw = new FileWriter(path);
