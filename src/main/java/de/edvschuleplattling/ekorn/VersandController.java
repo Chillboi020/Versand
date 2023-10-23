@@ -114,7 +114,6 @@ public class VersandController implements Initializable {
     private ArrayList<TextField> empfaengerList;
     private Auftrag auftrag = new Auftrag();
     private boolean istGeladen;
-    private static final DecimalFormat DEC = new DecimalFormat("#0.00");
     //endregion
 
     //region FXML Methoden
@@ -408,13 +407,13 @@ public class VersandController implements Initializable {
             }
             on_Vtyp_Selected();
             if (auftrag.getVersicherung() == Auftrag.vTyp.UE500) {
-                txt_Betrag.setText(DEC.format(auftrag.getBetrag()));
+                txt_Betrag.setText(String.format("%.2f", auftrag.getBetrag()));
             }
         }
 
         // Preisberechnung
         sld_Rabatt.setValue(auftrag.getRabatt());
-        txt_Preis.setText(DEC.format(auftrag.getPreis()));
+        txt_Preis.setText(String.format("%.2f", auftrag.getPreis()));
     }
 
     // Der Speicherprozess

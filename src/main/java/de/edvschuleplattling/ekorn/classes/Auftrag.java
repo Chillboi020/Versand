@@ -26,7 +26,6 @@ public class Auftrag {
     private static final double[] BASISPREIS = {0.60, 3.20, 5.50};
     private static final double[] EXPRESSAUFSCHLAG = {4.00, 6.00, 6.00};
     private static final double[] VERSICHERUNGEN = {1.20, 2.00, 0.005};
-    private static final DecimalFormat DEC = new DecimalFormat("#0.00");
 
     //endregion
 
@@ -226,7 +225,7 @@ public class Auftrag {
 
         // Gesamtpreis
         double preis = (zPreis + vPreis) * ((100 - getRabatt()) / 100);
-        String preisString = DEC.format(preis).replace(',', '.');
+        String preisString = String.format("%.2f", preis).replace(',', '.');
         preis = Double.parseDouble(preisString);
         setPreis(preis);
         return preisString;
